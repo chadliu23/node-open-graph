@@ -95,14 +95,19 @@ exports.parse = function($, options){
 	
 	var meta = {},
 		metaTags = $('meta');
-	
+	meta.og = {};
 	metaTags.each(function() {
 		var element = $(this);
 			propertyAttr = element.attr('property');
 		
 		// If meta element isn't an "og:" property, skip it
-		if (!propertyAttr || propertyAttr.substring(0, namespace.length) !== namespace)
+		if (!propertyAttr || propertyAttr.substring(0, namespace.length) !== namespace){
+			var nameAttr = element.attr('name');
+			if (nameAttr){
+				meta[nameAttr] = element.attr('content');
+			}
 			return;
+		}
 		
 		var property = propertyAttr.substring(namespace.length+1),
 			content = element.attr('content');
@@ -113,7 +118,7 @@ exports.parse = function($, options){
 		
 		
 		var key, tmp,
-			ptr = meta,
+			ptr = meta.og,
 			keys = property.split(':');
 
 		// we want to leave one key to assign to so we always use references
