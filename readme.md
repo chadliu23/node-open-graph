@@ -5,7 +5,7 @@ Simple to use; give it a URL and it'll give you the open graph meta properties s
 
 ## Install
 
-	npm install open-graph
+	npm install git://github.com/chadliu23/node-open-graph --save
 
 ## Usage
 
