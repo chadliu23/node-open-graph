@@ -22,17 +22,22 @@ og(url, function(err, meta){
 Outputs:
 
 	{
-	  title: 'OG Testing',
-	  type: 'website',
-	  url: 'http://github.com/samholmes/node-open-graph/raw/master/test.html',
-	  site_name: 'irrelavent',
-	  description: 'This is a test bed for Open Graph protocol.',
-	  image: 
-	  { 
-	   	 url: 'http://google.com/images/logo.gif',
-	     width: '100',
-	     height: '100'
+	  og:
+	  {
+		  title: 'OG Testing',
+		  type: 'website',
+		  url: 'http://github.com/samholmes/node-open-graph/raw/master/test.html',
+		  site_name: 'irrelavent',
+		  description: 'This is a test bed for Open Graph protocol.',
+		  image: 
+		  { 
+		   	 url: 'http://google.com/images/logo.gif',
+		     width: '100',
+		     height: '100'
+		  }
 	  }
+	  description: 'description haha',
+	  keywords: 'nodejs, open graph, opg'
 	}
 
 # Todo
