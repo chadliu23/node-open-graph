@@ -8,6 +8,8 @@ var shorthandProperties = {
 	"video": "video:url",
 	"audio": "audio:url"
 }
+var Iconv  = require('iconv').Iconv; 
+var gb2312_to_utf8_iconv = new Iconv('GB2312', 'UTF-8'); 
 
 
 exports = module.exports = function(url, cb, options){
@@ -32,12 +34,26 @@ exports.getHTML = function(url, cb){
 	url = require('url').format(purl);
 	
 	var client = httpModule.get(url, function(res){
-		res.setEncoding('utf-8');
 		
 		var html = "";
-		
+		var isGBK = false;
+
+		if(res.headers['content-type'].match(/charset=GBK/g))
+		{
+			isGBK = true;
+		}
+
 		res.on('data', function(data){
-			html += data;
+			if (isGBK){
+				try{
+					html += gb2312_to_utf8_iconv.convert(data);
+				}catch(ex){
+
+				}
+			}
+			else{
+				html += data;
+			}
 		});
 		
 		res.on('end', function(){
