@@ -38,7 +38,7 @@ exports.getHTML = function(url, cb){
 		var html = "";
 		var isGBK = false;
 
-		if(res.headers['content-type'].match(/charset=GBK/g))
+		if(res.headers['content-type'].match(/charset=GBK/ig))
 		{
 			isGBK = true;
 		}
