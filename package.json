@@ -22,6 +22,7 @@
   "license": "BSD",
   "dependencies": {
     "cheerio": "^0.17.0",
-    "iconv": "~2.1.5"
+    "iconv-lite": "~0.4.7",
+    "jschardet": "~1.1.0"
   }
 }
