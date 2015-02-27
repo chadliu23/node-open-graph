@@ -15,6 +15,7 @@ var iconv  = require('iconv-lite'),
 exports = module.exports = function(url, cb, options){
 	exports.getHTML(url, function(err, html){
 		if (err) return cb(err);
+
 		var $ = cheerio.load(html);
 		cb(null, exports.parse($, options));
 	})
@@ -32,43 +33,43 @@ exports.getHTML = function(url, cb){
 		: http;
 	
 	url = require('url').format(purl);
-	
-	var client = httpModule.get(url, function(res){
-		var matched = res.headers['content-type'].match(/charset=(.*)/i);
-		var encode = undefined;
-		if (matched){
-			encode = matched[1];
-		}
-		var html = "";
-
-		res.on('data', function(data){
-			try{
-				if (encode){
-					html += iconv.decode(data, encode );
-				}else{
-					html += iconv.decode(data, jschardet.detect(data)['encoding'] );
-				}
-			}catch(ex){
-
+	try{
+		var client = httpModule.get(url, function(res){
+			var matched = res.headers['content-type'].match(/charset=(.*)/i);
+			var encode = undefined;
+			if (matched){
+				encode = matched[1];
 			}
+			var html = "";
+
+			res.on('data', function(data){
+				try{
+					if (encode){
+						html += iconv.decode(data, encode );
+					}else{
+						html += iconv.decode(data, jschardet.detect(data)['encoding'] );
+					}
+				}catch(ex){
+				}
+			});
+			res.on('end', function(){
+				if (res.statusCode >= 300 && res.statusCode < 400)
+				{
+					exports.getHTML(res.headers.location, cb);
+				}
+				else
+				{
+					cb(null, html);
+				}
+			});
 		});
 		
-		res.on('end', function(){
-			if (res.statusCode >= 300 && res.statusCode < 400)
-			{
-				exports.getHTML(res.headers.location, cb);
-			}
-			else
-			{
-				cb(null, html);
-			}
-			
+		client.on('error', function(err){
+			cb(err);
 		});
-	});
-	
-	client.on('error', function(err){
-		cb(err);
-	})
+	}catch(ex){
+		cb(ex);
+	}
 }
 
 
