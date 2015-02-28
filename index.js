@@ -35,7 +35,11 @@ exports.getHTML = function(url, cb){
 	url = require('url').format(purl);
 	try{
 		var client = httpModule.get(url, function(res){
-			var matched = res.headers['content-type'].match(/charset=(.*)/i);
+
+			var matched = undefined;
+			if (res.headers['content-type']){
+				matched = res.headers['content-type'].match(/charset=(.*)/i);
+			}
 			var encode = undefined;
 			if (matched){
 				encode = matched[1];
