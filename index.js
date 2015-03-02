@@ -35,11 +35,19 @@ exports.getHTML = function(url, cb){
 	url = require('url').format(purl);
 	try{
 		var client = httpModule.get(url, function(res){
-			var html = "";
+			var chunks = [];
+			var matched = undefined;
+			if (res.headers['content-type']){
+				matched = res.headers['content-type'].match(/charset=(.*)/i);
+			}
+			var encode = undefined;
+			if (matched){
+				encode = matched[1];
+			}
 
 			res.on('data', function(data){
 				try{
-					html += iconv.decode(data, jschardet.detect(data)['encoding'] );
+					chunks.push(data);
 				}catch(ex){
 				}
 			});
@@ -50,6 +58,8 @@ exports.getHTML = function(url, cb){
 				}
 				else
 				{
+					var html = "";
+					html = iconv.decode(Buffer.concat(chunks), jschardet.detect(Buffer.concat(chunks))['encoding']);
 					cb(null, html);
 				}
 			});
