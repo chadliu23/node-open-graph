@@ -35,24 +35,11 @@ exports.getHTML = function(url, cb){
 	url = require('url').format(purl);
 	try{
 		var client = httpModule.get(url, function(res){
-
-			var matched = undefined;
-			if (res.headers['content-type']){
-				matched = res.headers['content-type'].match(/charset=(.*)/i);
-			}
-			var encode = undefined;
-			if (matched){
-				encode = matched[1];
-			}
 			var html = "";
 
 			res.on('data', function(data){
 				try{
-					if (encode){
-						html += iconv.decode(data, encode );
-					}else{
-						html += iconv.decode(data, jschardet.detect(data)['encoding'] );
-					}
+					html += iconv.decode(data, jschardet.detect(data)['encoding'] );
 				}catch(ex){
 				}
 			});
