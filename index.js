@@ -111,13 +111,33 @@ exports.parse = function($, options){
 	var meta = {},
 		metaTags = $('meta');
 	meta.og = {};
+	meta.twitter = {};
+	var ogNamespace = "og";
+	var twitterNamespace = 'twitter';
 	metaTags.each(function() {
 		var element = $(this);
-			propertyAttr = element.attr('property');
-		
+			propertyAttr = element.attr('property'), 
+			nameAttr = element.attr('name');
+		var ptr;
+		namespace = "";
+		if (propertyAttr && propertyAttr.substring(0, ogNamespace.length) == ogNamespace){
+			namespace = ogNamespace;
+			ptr = meta.og;
+		}
+
+		if (nameAttr && nameAttr.substring(0, twitterNamespace.length) == twitterNamespace){
+			namespace = twitterNamespace;
+			propertyAttr = nameAttr;
+			ptr = meta.twitter;
+		}
+		if (nameAttr && nameAttr.substring(0, ogNamespace.length) == ogNamespace){
+			namespace = ogNamespace;
+			propertyAttr = nameAttr;
+			ptr = meta.og;
+		}
+
 		// If meta element isn't an "og:" property, skip it
-		if (!propertyAttr || propertyAttr.substring(0, namespace.length) !== namespace){
-			var nameAttr = element.attr('name');
+		if ( namespace === ""){
 			if (nameAttr){
 				meta[nameAttr] = element.attr('content');
 			}
@@ -132,47 +152,51 @@ exports.parse = function($, options){
 		property = shorthandProperties[property] || property;
 		
 		
-		var key, tmp,
-			ptr = meta.og,
-			keys = property.split(':');
+		var	keys = property.split(':');
 
 		// we want to leave one key to assign to so we always use references
 		// as long as there's one key left, we're dealing with a sub-node and not a value
 
-		while (keys.length > 1) {
-			key = keys.shift();
+		extractMeta(ptr, keys, content);
 
-			if (Array.isArray(ptr[key])) {
-				// the last index of ptr[key] should become
-				// the object we are examining.
-				tmp = ptr[key].length-1;
-				ptr = ptr[key];
-				key = tmp;
-			}
-
-			if (typeof ptr[key] === 'string') {
-				// if it's a string, convert it
-				ptr[key] = { '': ptr[key] };
-			} else if (ptr[key] === undefined) {
-				// create a new key
-				ptr[key] = {};
-			}
-
-			// move our pointer to the next subnode
-			ptr = ptr[key];
-		}
-
-		// deal with the last key
-		key = keys.shift();
-
-		if (ptr[key] === undefined) {
-			ptr[key] = content;
-		} else if (Array.isArray(ptr[key])) {
-			ptr[key].push(content);
-		} else {
-			ptr[key] = [ ptr[key], content ];
-		}
 	});
 	
 	return meta;
+}
+
+function extractMeta(ptr, keys, content){
+	var key, tmp;
+	while (keys.length > 1) {
+		key = keys.shift();
+
+		if (Array.isArray(ptr[key])) {
+			// the last index of ptr[key] should become
+			// the object we are examining.
+			tmp = ptr[key].length-1;
+			ptr = ptr[key];
+			key = tmp;
+		}
+
+		if (typeof ptr[key] === 'string') {
+			// if it's a string, convert it
+			ptr[key] = { '': ptr[key] };
+		} else if (ptr[key] === undefined) {
+			// create a new key
+			ptr[key] = {};
+		}
+
+		// move our pointer to the next subnode
+		ptr = ptr[key];
+	}
+
+	// deal with the last key
+	key = keys.shift();
+
+	if (ptr[key] === undefined) {
+		ptr[key] = content;
+	} else if (Array.isArray(ptr[key])) {
+		ptr[key].push(content);
+	} else {
+		ptr[key] = [ ptr[key], content ];
+	}
 }
