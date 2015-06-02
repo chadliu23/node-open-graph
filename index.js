@@ -124,16 +124,23 @@ exports.parse = function($, options){
 			nameAttr = element.attr('name');
 		var ptr;
 		namespace = "";
+
+		// Standard og namespace 
+		// <meta property="og:XXXX" content="" />
 		if (propertyAttr && propertyAttr.substring(0, ogNamespace.length) == ogNamespace){
 			namespace = ogNamespace;
 			ptr = meta.og;
 		}
 
+		// Standard twitter namespace 
+		// <meta name="twitter:XXXX" content="" />
 		if (nameAttr && nameAttr.substring(0, twitterNamespace.length) == twitterNamespace){
 			namespace = twitterNamespace;
 			propertyAttr = nameAttr;
 			ptr = meta.twitter;
 		}
+
+		// This is fix for <meta name="og:XXXX" content="" />
 		if (nameAttr && nameAttr.substring(0, ogNamespace.length) == ogNamespace){
 			namespace = ogNamespace;
 			propertyAttr = nameAttr;
