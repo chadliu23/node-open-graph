@@ -59,7 +59,11 @@ exports.getHTML = function(url, cb){
 				else
 				{
 					var html = "";
-					html = iconv.decode(Buffer.concat(chunks), jschardet.detect(Buffer.concat(chunks))['encoding']);
+					try{
+						html = iconv.decode(Buffer.concat(chunks), jschardet.detect(Buffer.concat(chunks))['encoding']);
+					}catch(ex){
+						html = iconv.decode(Buffer.concat(chunks), 'utf-8');
+					}
 					cb(null, html);
 				}
 			});
