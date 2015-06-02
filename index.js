@@ -62,7 +62,9 @@ exports.getHTML = function(url, cb){
 					try{
 						html = iconv.decode(Buffer.concat(chunks), jschardet.detect(Buffer.concat(chunks))['encoding']);
 					}catch(ex){
-						html = iconv.decode(Buffer.concat(chunks), 'utf-8');
+						try{
+							html = iconv.decode(Buffer.concat(chunks), 'utf-8');
+						}catch(ex){}
 					}
 					cb(null, html);
 				}
